@@ -2,7 +2,7 @@
 
 Documento de Requisitos de Produto (PRD)
 
-Versão: 2.0.
+Versão: 2.5.
 
 # 1. Visão Geral do Produto
 
@@ -10,110 +10,110 @@ Versão: 2.0.
 Context Compression Benchmark (LLMLingua)
 
 ## Resumo Executivo
-Uma ferramenta de benchmarking avançada para avaliar ganhos de eficiência (redução de VRAM, latência e custos) ao utilizar técnicas de compressão de prompt (LLMLingua). O sistema integra-se ao ecossistema LangChain para RAG (Retrieval-Augmented Generation) e oferece uma interface visual rica para exploração de resultados.
+Uma plataforma de benchmarking e playground para otimização de contextos em Modelos de Linguagem de Larga Escala (LLMs). O sistema utiliza a técnica **LLMLingua** para comprimir prompts em até 5x-10x, reduzindo drasticamente o consumo de VRAM e a latência de inferência em hardware local, sem perda significativa de fidelidade semântica.
 
 # 2. Problema de Negócio
-- **Gargalo de Contexto**: Modelos de linguagem possuem limites de janelas de contexto que aumentam custos e latência de forma quadrática ($O(N^2)$).
-- **Consumo de VRAM**: Processar documentos longos localmente frequentemente causa erros de "Out of Memory" (OOM).
-- **Ruído Semântico**: Documentos longos contêm muitos tokens de baixa informação que prejudicam a atenção do modelo ("Lost in the Middle").
+- **Custo Computacional**: Inferência em contextos longos (RAG) é lenta e consome VRAM de forma proibitiva para hardware doméstico.
+- **Limites de Janela**: Documentos extensos frequentemente excedem o limite de tokens dos modelos.
+- **Ruído Semântico**: Tokens irrelevantes em documentos recuperados aumentam a distração do modelo ("Lost in the Middle").
 
 # 3. Objetivo do Produto
-Validar empiricamente que a compressão de contexto pode reduzir drasticamente o consumo de recursos sem comprometer a qualidade da resposta, fornecendo ferramentas para integração em pipelines corporativos (RAG) e visualização de dados.
+Prover uma ferramenta modular para validar e integrar compressão de contexto em pipelines de IA, permitindo que modelos de 7B+ parâmetros operem eficientemente em GPUs de entrada/intermediárias (8GB-12GB VRAM).
 
 # 4. Público-Alvo
 
 ## Primário
-- Desenvolvedores de IA e Engenheiros de Machine Learning.
-- Pesquisadores focados em otimização de LLMs.
+- Engenheiros de IA/ML focados em otimização local.
+- Desenvolvedores de sistemas RAG.
 
 ## Secundário
-- Arquitetos de Soluções RAG.
-- Desenvolvedores de aplicações que buscam reduzir custos de tokens em APIs.
+- Pesquisadores acadêmicos em Processamento de Linguagem Natural (NLP).
+- Empresas buscando reduzir custos de tokens em provedores de nuvem.
 
 # 5. Proposta de Valor
 
 ## Benefícios principais
-- **Economia de Recursos**: Redução comprovada de até 5x no tamanho do contexto.
-- **Performance Local**: Viabiliza o uso de modelos de 7B-8B em GPUs com 8GB-12GB de VRAM.
-- **Integração Corporativa**: Compatibilidade nativa com LangChain.
-- **Visualização de Dados**: Interface Streamlit para análise qualitativa e quantitativa imediata.
+- [x] **Eficiência**: Redução de até 80% no tamanho do prompt.
+- [x] **Economia**: Menor uso de memória de vídeo (VRAM) via KV-Cache otimizado.
+- [x] **Velocidade**: Aceleração do tempo de "First Token" (Pre-fill).
+- [x] **Acurácia**: Manutenção da qualidade da resposta através de seleção inteligente de tokens.
 
 # 6. Justificativa Tecnológica
-- **LLMLingua**: Baseado em teoria da informação, utiliza a perplexidade para identificar tokens descartáveis.
-- **Quantização 4-bit (bitsandbytes)**: Essencial para rodar modelos SOTA em hardware doméstico.
-- **Monkey-Patching**: Solução de compatibilidade implementada para lidar com conflitos entre `transformers` e `llmlingua`.
+- **LLMLingua/PromptCompressor**: Utiliza a perplexidade de um modelo pequeno (0.5B) para remover tokens de baixa informação.
+- **Quantização 4-bit (bitsandbytes)**: Permite rodar modelos potentes (7B) em 5GB-6GB de VRAM.
+- **Telemetria Integrada**: Monitoramento de hardware em tempo real para provas de conceito (PoC).
 
 # 7. Benchmark de Modelos no Projeto
-
-| Papel | Modelo | Motivo da Escolha |
+| Função | Modelo Selecionado | Justificativa |
 |---|---|---|
-| **Inferência** | `Qwen2.5-7B-Instruct` | SOTA em performance para modelos compactos e excelente suporte a português. |
-| **Compressão** | `Qwen2.5-0.5B` | Extremamente leve, compartilhando o mesmo tokenizer do modelo de inferência (alinhamento semântico). |
-
-# 12. Hardware Alvo
-- **GPU**: NVIDIA (Mínimo 8GB VRAM com CUDA).
-- **RAM**: 16GB+.
-- **SO**: Windows (Facilitado via PowerShell) ou Linux.
+| **Inferência** | `Qwen2.5-7B-Instruct` | Melhor relação performance/parâmetros atual (SOTA). |
+| **Compressão** | `Qwen2.5-0.5B` | Alinhamento de tokenizer com o modelo de inferência. |
 
 # 8. Funcionalidades Principais
-- [x] **Benchmark A/B**: Comparação direta entre prompt puro e comprimido.
-- [x] **Integração RAG**: Retriever customizado para LangChain (`LLMLinguaDocumentCompressor`).
-- [x] **Interface Gráfica**: Dashboard interativo em Streamlit com gráficos Plotly.
-- [x] **Telemetria**: Monitoramento em tempo real de CPU, RAM e VRAM (PyTorch peak).
-- [x] **Extração Automática**: Scraping de dados da Wikipedia e integração de textos bíblicos (Salmos 91).
+- [x] **Dashboard Interativo**: Interface Streamlit para testes A/B.
+- [x] **Playground de Compressão**: Comparação em tempo real entre texto puro e comprimido.
+- [x] **Análise de Performance**: Gráficos Plotly de latência e pico de VRAM.
+- [x] **Integração LangChain**: Módulo `LLMLinguaDocumentCompressor` para pipelines RAG.
+- [x] **Gestão de Memória**: Botão para limpeza forçada de cache de VRAM.
 
 # 9. Requisitos Funcionais
-- [x] O sistema deve carregar modelos quantizados em 4-bit via HuggingFace.
-- [x] O sistema deve calcular a taxa de compressão e tempo de execução.
-- [x] O sistema deve gerar relatórios em CSV e JSON.
-- [x] A interface Streamlit deve permitir a limpeza de cache de VRAM.
+- [x] Carregar modelos HuggingFace com `load_in_4bit=True`.
+- [x] Suportar entrada de texto via scraping (Wikipedia) ou arquivos locais.
+- [x] Exportar métricas de benchmark para CSV/JSON.
+- [x] Implementar monitoramento de sistema (`psutil` + `torch.cuda`).
 
 # 10. Requisitos Não Funcionais
-- **Confiabilidade**: Limpeza de memória (`gc` e `cuda.empty_cache`) entre execuções.
-- **Usabilidade**: Scripts modulares com separação clara de responsabilidades.
-- **Performance**: Compressão não deve demorar mais que o ganho de tempo obtido na inferência.
+- **Modularidade**: Scripts separados para inferência, compressão e utilitários.
+- **Performance**: O overhead da compressão deve ser inferior ao ganho de tempo na inferência.
+- **UX**: Interface escura (dark mode) com estética premium e responsiva.
 
 # 11. Arquitetura Proposta
+| Módulo | Arquivo | Função |
+|---|---|---|
+| **Frontend** | `scripts/app.py` | UI Streamlit e Dashboard. |
+| **Compressão** | `scripts/compressor.py` | Lógica de compressão LLMLingua. |
+| **Inferência** | `scripts/llm_inference.py` | Wrapper para Transformers/PyTorch. |
+| **RAG** | `scripts/langchain_compressor.py` | Integração com LangChain. |
+| **Monitor** | `scripts/utils.py` | Telemetria de hardware. |
 
-| Camada | Componentes |
-|---|---|
-| **Visual** | `scripts/app.py` (Streamlit + Plotly) |
-| **Integração** | `scripts/langchain_llm.py`, `scripts/langchain_compressor.py` |
-| **Core** | `scripts/llm_inference.py`, `scripts/compressor.py` |
-| **Orquestração** | `scripts/benchmark.py`, `scripts/benchmark_rag.py` |
-| **Monitoramento** | `scripts/utils.py` |
+# 12. Hardware Alvo
+- **GPU**: NVIDIA RTX 3060+ (Mínimo 8GB VRAM).
+- **RAM**: 16GB.
+- **Drivers**: CUDA 11.8+ instalado.
 
 # 13. Métricas de Sucesso
-- **TCA**: Taxa de compressão >= 5.0x no cenário B.
-- **Latência**: Redução de tempo no "Pre-fill" do cenário B.
-- **VRAM**: Pico de memória inferior no cenário B durante a inferência.
-- **Fidelidade**: Resposta do cenário B deve conter os fatos principais do texto original.
+- **TCA**: Taxa de Compressão Alvo >= 5.0x.
+- **VRAM**: Redução de ~15-20% no pico de memória em contextos longos.
+- **Fidelidade**: Resposta gerada deve manter a verdade factual do texto original.
 
 # 14. Roadmap
-- [x] **Fase 1**: Setup e Quantização 4-bit.
-- [x] **Fase 2**: Orquestrador A/B e Telemetria.
-- [x] **Fase 3**: Geração de Relatórios e Análise Técnica.
-- [x] **Fase 4**: Integração com LangChain e Pipelines RAG.
-- [x] **Fase 5**: Interface Visual Rica (Streamlit).
-- [ ] **Fase 6**: Suporte a modelos Multimodais e compressão de imagens.
+- [x] Setup do ambiente e quantização.
+- [x] Implementação do core de compressão.
+- [x] Criação do dashboard Streamlit.
+- [x] Integração modular com LangChain.
+- [ ] Suporte a modelos multimoldais (Vision-Language).
+- [ ] Implementação de cache de prompts comprimidos em banco vetorial.
 
 # 15. Riscos
-- **Alucinação**: Taxas de compressão extremas podem omitir nomes e datas.
-- **Compatibilidade**: Quebras futuras em bibliotecas de terceiros (Transformers).
-- **Hardware**: Dependência de GPUs NVIDIA para quantização otimizada.
+- **Alucinação**: Perda de detalhes finos em taxas de compressão > 10x.
+- **Dependências**: Conflitos entre versões de `transformers` e `llmlingua`.
+- **Hardware**: Incompatibilidade com GPUs não-NVIDIA (bitsandbytes).
 
 # 16. Entrega Esperada
-Um repositório robusto com scripts de terminal, uma interface web operacional e documentação técnica acadêmica comprovando os benefícios da técnica.
+Repositório completo com pipeline de compressão validado, dashboard de visualização e scripts de integração para sistemas RAG corporativos.
 
 # 17. Critério de Avaliação
-1. O comando `python -m streamlit run scripts/app.py` deve iniciar o dashboard.
-2. O arquivo `benchmark_metrics.csv` deve refletir a economia de VRAM.
-3. As respostas do modelo comprimido devem manter coerência com a pergunta original.
+1. Sucesso ao executar `python -m streamlit run scripts/app.py`.
+2. Geração de resposta coerente no Playground usando 5x de compressão.
+3. Redução visível nos gráficos de latência "Pre-fill" para contextos > 2k tokens.
 
 ---
-**Estado Atual dos Arquivos (Checklist):**
-- [x] `scripts/app.py` -> Interface Visual.
-- [x] `scripts/langchain_compressor.py` -> Módulo RAG.
-- [x] `scripts/benchmark_rag.py` -> Teste de RAG.
-- [x] `outputs/respostas_comparativas.json` -> Resultados salvos.
-- [x] `run.ps1` -> Facilitador de execução.
+
+**Estado Atual dos Arquivos (Checklist para IA):**
+- [x] `scripts/app.py` -> Interface Principal (OK).
+- [x] `scripts/compressor.py` -> Engine de Compressão (OK).
+- [x] `scripts/llm_inference.py` -> Backend de Inferência (OK).
+- [x] `scripts/langchain_compressor.py` -> Plugin RAG (OK).
+- [x] `scripts/benchmark_rag.py` -> Script de Teste Automatizado (OK).
+- [x] `requirements.txt` -> Dependências atualizadas (OK).
+- [x] `run.ps1` -> Automação de execução no Windows (OK).

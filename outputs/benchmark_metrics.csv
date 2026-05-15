@@ -1,3 +1,3 @@
 cenario,tokens_entrada,taxa_compressao_alcancada,time_seconds,tempo_compressao_seg,tempo_inferencia_seg,cpu_percent,ram_used_mb,vram_peak_mb,tamanho_resposta_chars
-A_Sem_Compressao,558,1.00x,33.56,0.0,33.56,97.8,691.15,5661.35,1193
-B_Com_Compressao_5x,191,2.92x,20.56,0.2,20.36,98.2,4.82,5605.06,745
+A_Sem_Compressao,558,1.00x,36.73,0.0,36.73,97.3,690.86,5661.35,1192
+B_Com_Compressao_5x,191,2.92x,17.79,0.23,17.56,97.3,4.89,5605.06,618
